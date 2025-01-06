@@ -1,3 +1,4 @@
+// window.cpp
 #include "window.hpp"
 #include <QVBoxLayout>
 #include <iostream>
@@ -6,7 +7,10 @@ App::App(QWidget *parent) : QMainWindow(parent), mButtonPressedAmt(0) {
   // Create a central widget to hold layout-based controls
   auto centralWidget = new QWidget(this);
 
+  this->resize(800, 600); // Example size
+
   this->mpLabel = new QLabel(centralWidget);
+  this->mpLabel->setWordWrap(true); // Enable word wrapping
   this->mpPushButton = new QPushButton("Press Me!", centralWidget);
 
   // Initial text on the label
@@ -25,7 +29,8 @@ App::App(QWidget *parent) : QMainWindow(parent), mButtonPressedAmt(0) {
   // Connect the button's click to increment and update text
   QObject::connect(this->mpPushButton, &QPushButton::clicked, this, [this]() {
     this->mButtonPressedAmt++;
-    this->updateLabelText();
+    // Use the stored mChapterText when updating the passage
+    this->updatePassage(mChapterText);
   });
 
   // Print label text in the console whenever sigLabelTextUpdated is emitted
@@ -42,12 +47,38 @@ void App::updateLabelText() {
   emit sigLabelTextUpdated(this->mpLabel->text().toStdString());
 }
 
-// This function can be called from anywhere (e.g., after loading an ePub
-// chapter)
-void App::setChapterContent(const QString &content) {
-  // Update the label text with the chapter content
-  this->mpLabel->setText(content);
+void App::updatePassage(const QString &content) {
+  // Define chunk size
+  int chunkSize = 1000;
 
-  // Optionally emit the signal if you want to log or track changes
+  // Calculate the starting character
+  int startChar = mButtonPressedAmt * chunkSize;
+
+  // Check if startChar exceeds content length
+  if (startChar >= content.length()) {
+    // Reset to loop back to the beginning
+    mButtonPressedAmt = 0;
+    startChar = 0;
+  }
+
+  // Extract the passage
+  QString passage = content.mid(startChar, chunkSize);
+
+  // Update the label with the passage
+  this->mpLabel->setText(passage);
+
+  // Emit signal for logging or tracking
+  emit sigLabelTextUpdated(this->mpLabel->text().toStdString());
+}
+
+// Store and display the full chapter text initially
+void App::setChapterContent(const QString &content) {
+  // Save the content so it can be reused in updatePassage(...)
+  mChapterText = content;
+
+  // Optionally display the initial text (e.g., first 1000 characters)
+  this->mpLabel->setText(mChapterText.left(1000));
+
+  // Emit signal if you want to log or track changes
   emit sigLabelTextUpdated(this->mpLabel->text().toStdString());
 }

@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
     // Get the first chapter content (index 0)
     QString firstChapterText = parser.getChapterContent(0);
     QString subString =
-        firstChapterText.mid(0, 1000); // subString contains "is"
+        firstChapterText.mid(0, 10000); // subString contains "is"
     if (!firstChapterText.isEmpty()) {
       mainWindow.setChapterContent(subString);
     } else {

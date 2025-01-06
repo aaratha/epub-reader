@@ -21,11 +21,14 @@ signals:
 
 private slots:
   void updateLabelText();
+  void updatePassage(const QString &content);
 
 private:
   QLabel *mpLabel;
   QPushButton *mpPushButton;
   int mButtonPressedAmt;
+
+  QString mChapterText;
 };
 
 #endif // WINDOW_HPP
