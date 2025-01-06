@@ -46,7 +46,6 @@ void App::updateLabelText() {
   // Emit our custom signal
   emit sigLabelTextUpdated(this->mpLabel->text().toStdString());
 }
-
 void App::updatePassage(const QString &content) {
   // Define chunk size
   int chunkSize = 1000;
@@ -64,8 +63,11 @@ void App::updatePassage(const QString &content) {
   // Extract the passage
   QString passage = content.mid(startChar, chunkSize);
 
+  // Wrap in rich text tags to ensure proper rendering
+  QString richText = "<html><body>" + passage + "</body></html>";
+
   // Update the label with the passage
-  this->mpLabel->setText(passage);
+  this->mpLabel->setText(richText);
 
   // Emit signal for logging or tracking
   emit sigLabelTextUpdated(this->mpLabel->text().toStdString());
@@ -77,7 +79,7 @@ void App::setChapterContent(const QString &content) {
   mChapterText = content;
 
   // Optionally display the initial text (e.g., first 1000 characters)
-  this->mpLabel->setText(mChapterText.left(1000));
+  this->mpLabel->setText(mChapterText.left(3000));
 
   // Emit signal if you want to log or track changes
   emit sigLabelTextUpdated(this->mpLabel->text().toStdString());
